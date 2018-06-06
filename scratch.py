@@ -1,5 +1,7 @@
 import argparse
 import os
+
+import ClinicalNotesProcessor.JSONParser as JSONParser
 from Interface.MedLPServiceInterface import MedLPServiceInterface
 
 
@@ -16,18 +18,10 @@ cmd_arg_parser.add_argument('--input',
 print(os.path.dirname(os.path.realpath(__file__)))
 cmd_args = cmd_arg_parser.parse_args()
 
-'''
-
-text = ""
-for line in fileinput.input():
-    text = text + line
-'''
 
 with open(cmd_args.input_file) as file:
    text = file.read()
 
-medlp = MedLPServiceInterface()
+medlp = MedLPServiceInterface(JSONParser.xform_dict_to_json)
 entities = medlp.get_entities(text)
-
-for entity in entities:
-    print('Entity', entity)
+print(entities)
