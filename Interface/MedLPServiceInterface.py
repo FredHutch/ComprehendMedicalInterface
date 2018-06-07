@@ -12,9 +12,8 @@ class MedLPServiceInterface(AmazonServiceInterface):
         '''
 
         super(MedLPServiceInterface, self).__init__(
-            service_name='deepinsighthera',
-            region='us-east-1',
-            endpoint='https://aws707.us-east-1.amazonaws.com/')
+            'deepinsighthera',
+            'US_EAST')
 
 
         self.parser = output_parser

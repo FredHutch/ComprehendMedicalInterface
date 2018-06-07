@@ -1,15 +1,24 @@
 import boto3
 
+from utils.decorators import validateargs, in_dict, is_string
 
 class AmazonServiceInterface():
-    def __init__(self, service_name, region, endpoint):
+    VALID_ENDPOINTS = {
+        'US_EAST': 'https://aws707.us-east-1.amazonaws.com/'
+    }
+
+    VALID_REGIONS = {
+        'US_EAST': 'us-east-1',
+    }
+
+    @validateargs
+    def __init__(self, service_name, region: in_dict(VALID_REGIONS)):
         '''
 
         :param service_name: the AWS service name
         :param region:  the AWS operating region, like 'us-east-1', 'us-west-2'
-        :param endpoint: The AWS URL endpoint, like: https://aws707.us-east-1.amazonaws.com/
         '''
         self.service = boto3.client(service_name=service_name,
-                                    region_name=region,
-                                    endpoint_url=endpoint,
+                                    region_name=AmazonServiceInterface.VALID_REGIONS[region],
+                                    endpoint_url=AmazonServiceInterface.VALID_ENDPOINTS[region],
                                     use_ssl=True);
