@@ -21,4 +21,4 @@ class AmazonServiceInterface():
         self.service = boto3.client(service_name=service_name,
                                     region_name=AmazonServiceInterface.VALID_REGIONS[region],
                                     endpoint_url=AmazonServiceInterface.VALID_ENDPOINTS[region],
-                                    use_ssl=True);
+                                   use_ssl=True)
