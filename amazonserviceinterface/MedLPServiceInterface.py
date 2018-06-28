@@ -64,13 +64,15 @@ class MedLPServiceInterface(AmazonServiceInterface):
 
 
     def _find_cutoff_point_in_text(self, text_chunk):
-        idx = text_chunk.rfind("\n") + len("\n")
+        newline_list = ["\n", "\r"]
+        idx = max([text_chunk.rfind(candidate)+ len(candidate) for candidate in newline_list])
+
 
         if idx > 0:
             return text_chunk[0:idx]
 
-        logger.warning("No suitable cutoff was found in text of length {}. returning original text"
-                       .format(len(text_chunk)))
+        logger.warning("No suitable cutoff was found in text of length {}. returning original text at final character: '{}'"
+                       .format(len(text_chunk), text_chunk[-1]))
         return text_chunk
 
 

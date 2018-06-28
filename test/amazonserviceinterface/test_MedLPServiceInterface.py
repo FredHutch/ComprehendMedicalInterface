@@ -8,6 +8,7 @@ class TestMedLPServiceInterface(unittest.TestCase):
     def setUp(self):
         self.medLPServiceInterface = MedLPServiceInterface(JSONParser.xform_dict_to_json)
         self.INPUT_TEXT = "big happy case stuff \n that's small."
+        self.INPUT_TEXT_MULTIPLE_NEWLINES = "big happy case stuff \n\r that's small."
         self.INPUT_TEXT_NO_VALID_SPlIT = "big happy case stuff that's small."
 
     def tearDown(self):
@@ -45,3 +46,16 @@ class TestMedLPServiceInterface(unittest.TestCase):
 
         self.assertEqual(expectedOutput, actualOutput, "the text will default to splitting at the cutoff"
                                                        " if no viable option is found")
+
+
+    def test_vet_text_single_split_multiple_valid_newlines(self):
+        '''
+        case: when text is larger than the provided cutoff, the text will split on first available newline
+        even if there are multiple valid candidates
+        '''
+
+        expectedOutput = [self.INPUT_TEXT_MULTIPLE_NEWLINES[0:23], self.INPUT_TEXT_MULTIPLE_NEWLINES[23:]]
+        actualOutput = self.medLPServiceInterface.vet_text(self.INPUT_TEXT_MULTIPLE_NEWLINES, cutoff=26)
+
+        self.assertEqual(expectedOutput, actualOutput, "the text will split on first available newline, "
+                                                       "even if there are multiple valid candidates")
