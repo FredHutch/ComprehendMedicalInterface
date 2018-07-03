@@ -50,12 +50,16 @@ class MedLPServiceInterface(AmazonServiceInterface):
             else:
                 chunk_result = self.service.detect_entities(Text=text_chunk)
 
+            id_increment = 0
+            try:
+                id_increment = chunk_result['Entities'][-1]['Id'] + 1  # add the id Int of the last entity to the ongoing count
+            except IndexError as e:
+                logger.warning("no entities within range of {} to {}".format(char_offset, char_offset + CUTOFF_LENGTH))
+
             results.append(self._inject_offset_for_paginated_query(chunk_result['Entities'], char_offset, id_offset))
             char_offset += len(text_chunk)
-            try:
-                id_offset += chunk_result['Entities'][-1]['Id'] #add the id Int of the last entity to the ongoing count
-            except IndexError as e:
-                logger.warning("no entities within range of {} to {}".format(char_offset, CUTOFF_LENGTH))
+            id_offset += id_increment #add the id Int of the last entity to the ongoing count
+
 
         flattened_results = list(itertools.chain.from_iterable(results))
 
@@ -114,9 +118,6 @@ class MedLPServiceInterface(AmazonServiceInterface):
 
 
     def _vet_entity_types(self, type_list):
-        print(type_list)
-        print(type(type_list))
-        print(isinstance(type_list, str))
         if (not isinstance(type_list, list)) and (not isinstance(type_list, str)):
             logger.warning("Type Format Error encountered for type_list parameter: {}".format(type_list))
             raise ValueError("Type Format Error")
