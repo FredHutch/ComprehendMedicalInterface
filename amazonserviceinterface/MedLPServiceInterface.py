@@ -52,8 +52,7 @@ class MedLPServiceInterface(AmazonServiceInterface):
 
             id_increment = 0
             try:
-                id_increment = chunk_result['Entities'][-1][
-                                 'Id'] + 1  # add the id Int of the last entity to the ongoing count
+                id_increment = chunk_result['Entities'][-1]['Id'] + 1  # add the id Int of the last entity to the ongoing count
             except IndexError as e:
                 logger.warning("no entities within range of {} to {}".format(char_offset, char_offset + CUTOFF_LENGTH))
 
