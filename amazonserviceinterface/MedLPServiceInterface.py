@@ -1,4 +1,5 @@
 import boto3
+import itertools
 import logging
 
 from amazonserviceinterface.AmazonServiceInterface import AmazonServiceInterface
@@ -32,13 +33,48 @@ class MedLPServiceInterface(AmazonServiceInterface):
 
     def get_entities(self, text, **kwargs):
         cleaned_text = self.vet_text(text)
-        if "entityTypes" in kwargs:
-            vetted_types = self._vet_entity_types(kwargs["entityTypes"])
-            result = self.service.detect_entities(Text=text, Types=vetted_types)
-        else:
-            result = self.service.detect_entities(Text=text)
 
-        return self.parser(result['Entities'])
+
+        return self._get_paginated_entities(cleaned_text, **kwargs)
+
+
+    def _get_paginated_entities(self, text_list, **kwargs):
+        results = []
+        char_offset = 0
+        id_offset = 0
+
+        for i, text_chunk in enumerate(text_list):
+            if "entityTypes" in kwargs:
+                vetted_types = self._vet_entity_types(kwargs["entityTypes"])
+                chunk_result = self.service.detect_entities(Text=text_chunk, Types=vetted_types)
+            else:
+                chunk_result = self.service.detect_entities(Text=text_chunk)
+
+            results.append(self._inject_offset_for_paginated_query(chunk_result['Entities'], char_offset, id_offset))
+            char_offset += len(text_chunk)
+            try:
+                id_offset += chunk_result['Entities'][-1]['Id'] #add the id Int of the last entity to the ongoing count
+            except IndexError as e:
+                logger.warning("no entities within range of {} to {}".format(char_offset, CUTOFF_LENGTH))
+
+        flattened_results = list(itertools.chain.from_iterable(results))
+
+        return flattened_results
+
+    def _inject_offset_for_paginated_query(self, entity_chunk, char_offset: int, id_offset: int):
+        '''
+        Given a JSON-like entity, use the provided initial char offset and entity ID offset to
+        :param entity_chunk: a list of dicts containing: 'Id', 'BeginOffset', 'EndOffset'
+        :param char_offset: the int offset to add to all entities
+        :param id_offset: the ID count offset to add to all ID's
+        :return:
+        '''
+        for entity in entity_chunk:
+            entity['Id'] = entity['Id'] + id_offset
+            entity['BeginOffset'] = entity['BeginOffset'] + char_offset
+            entity['EndOffset'] = entity['EndOffset'] + char_offset
+
+        return entity_chunk
 
 
     def vet_text(self, text, cutoff=CUTOFF_LENGTH):
@@ -71,7 +107,8 @@ class MedLPServiceInterface(AmazonServiceInterface):
         if idx > 0:
             return text_chunk[0:idx]
 
-        logger.warning("No suitable cutoff was found in text of length {}. returning original text at final character: '{}'"
+        logger.warning("No suitable cutoff was found in text of length {}."
+                       " returning original text at final character: '{}'"
                        .format(len(text_chunk), text_chunk[-1]))
         return text_chunk
 
