@@ -3,6 +3,7 @@ import clinicalnotesprocessor.JSONParser as JSONParser
 
 from amazonserviceinterface.MedLPServiceInterface import MedLPServiceInterface
 
+
 class TestMedLPServiceInterface(unittest.TestCase):
 
     def setUp(self):
@@ -59,3 +60,47 @@ class TestMedLPServiceInterface(unittest.TestCase):
 
         self.assertEqual(expectedOutput, actualOutput, "the text will split on first available newline, "
                                                        "even if there are multiple valid candidates")
+
+    def test_inject_offset_for_paginated_query(self):
+        '''
+        case: entity chunk is returned with offsets injected
+
+        '''
+        input = [{'Id': 0, 'BeginOffset': 10, 'EndOffset': 20, 'Score': .99},
+                 {'Id': 1, 'BeginOffset': 30, 'EndOffset': 35, 'Score': .99}]
+        expectedOutput = [{'Id': 20, 'BeginOffset': 20, 'EndOffset': 30, 'Score': .99},
+                          {'Id': 21, 'BeginOffset': 40, 'EndOffset': 45, 'Score': .99}]
+        actualOutput = self.medLPServiceInterface._inject_offset_for_paginated_query(input, 10, 20)
+
+        self.assertEqual(expectedOutput, actualOutput, "entity chunk is returned with offsets injected")
+
+
+
+    def test_get_paginated_entities(self):
+        '''
+        case: when the MedLPService is called with paginated input, the output is correctly stitched together.
+        '''
+        serviceOutput_1 = {'Entities':
+                               [{'Id': 1, 'BeginOffset': 20, 'EndOffset': 30, 'Score': .99},
+                               {'Id': 2, 'BeginOffset': 40, 'EndOffset': 45, 'Score': .99}]
+                           }
+        serviceOutput_2 = {'Entities':
+                               [{'Id': 1, 'BeginOffset': 20, 'EndOffset': 30, 'Score': .99},
+                               {'Id': 2, 'BeginOffset': 40, 'EndOffset': 45, 'Score': .99}]
+                           }
+        mockMedLPService = unittest.mock.MagicMock()
+        mockMedLPService.detect_entities.side_effect = iter([serviceOutput_1, serviceOutput_2])
+        self.medLPServiceInterface.service = mockMedLPService
+
+        input = ["foo bar baz", "bif zoom pow"]
+        expectedOutput = [{'Id': 1, 'BeginOffset': 20, 'EndOffset': 30, 'Score': .99},
+                          {'Id': 2, 'BeginOffset': 40, 'EndOffset': 45, 'Score': .99},
+                          {'Id': 3, 'BeginOffset': 31, 'EndOffset': 41, 'Score': .99},
+                          {'Id': 4, 'BeginOffset': 51, 'EndOffset': 56, 'Score': .99}
+                          ]
+        actualOutput = self.medLPServiceInterface._get_paginated_entities(input)
+
+        self.assertEqual(expectedOutput,
+                         actualOutput,
+                         "The returns from the MedLPService will be correctly stitched together across calls")
+
