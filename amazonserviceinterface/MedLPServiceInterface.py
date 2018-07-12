@@ -65,6 +65,7 @@ class MedLPServiceInterface(AmazonServiceInterface):
 
         return flattened_results
 
+
     def _inject_offset_for_paginated_query(self, entity_chunk, char_offset: int, id_offset: int):
         '''
         Given a JSON-like entity, use the provided initial char offset and entity ID offset to
@@ -106,7 +107,6 @@ class MedLPServiceInterface(AmazonServiceInterface):
     def _find_cutoff_point_in_text(self, text_chunk):
         newline_list = ["\n", "\r"]
         idx = max([text_chunk.rfind(candidate)+ len(candidate) for candidate in newline_list])
-
 
         if idx > 0:
             return text_chunk[0:idx]
