@@ -1,1 +1,1 @@
-include amazonserviceinterface/models *
+include models/*
