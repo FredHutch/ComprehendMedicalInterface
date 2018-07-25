@@ -5,7 +5,6 @@ from setuptools.command.develop import develop
 from setuptools.command.install import install
 from subprocess import check_call
 
-setup_path = os.path.dirname(os.path.realpath(__file__))
 
 def make_awscli_call():
     '''
