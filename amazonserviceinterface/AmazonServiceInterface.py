@@ -9,6 +9,7 @@ class AmazonServiceInterface():
 
     VALID_REGIONS = {
         'US_EAST': 'us-east-1',
+        'US_WEST': 'us-west-2'
     }
 
     @validateargs
@@ -20,5 +21,4 @@ class AmazonServiceInterface():
         '''
         self.service = boto3.client(service_name=service_name,
                                     region_name=AmazonServiceInterface.VALID_REGIONS[region],
-                                    endpoint_url=AmazonServiceInterface.VALID_ENDPOINTS[region],
-                                   use_ssl=True)
+                                    use_ssl=True)
