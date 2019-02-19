@@ -103,7 +103,7 @@ class TestMedLPServiceInterface(unittest.TestCase):
                           {'Id': 4, 'BeginOffset': 43, 'EndOffset': 53, 'Score': .99},
                           {'Id': 5, 'BeginOffset': 63, 'EndOffset': 68, 'Score': .99}
                           ]
-        actualOutput = self.medLPServiceInterface._get_paginated_entities(input)
+        actualOutput = self.medLPServiceInterface._get_paginated_entities(input, apicall='entities')
 
         self.assertEqual(expectedOutput,
                          actualOutput,

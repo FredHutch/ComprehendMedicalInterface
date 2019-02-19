@@ -17,6 +17,9 @@ ALLOWED_ENTITY_TYPES = [
     "ANATOMY",
 ]
 
+ENTITY_CALL = 'entities'
+PHI_CALL = 'phi'
+
 class MedLPServiceInterface(AmazonServiceInterface):
     def __init__(self, output_parser):
         '''
@@ -25,30 +28,62 @@ class MedLPServiceInterface(AmazonServiceInterface):
         '''
 
         super(MedLPServiceInterface, self).__init__(
-            'deepinsighthera',
+            'comprehendmedical',
             'US_EAST')
 
         self.parser = output_parser
 
-
     def get_entities(self, text, **kwargs):
+        kwargs['apicall'] = ENTITY_CALL
+        return self._get_call(text, **kwargs)
+
+    def get_phi(self, text, **kwargs):
+        kwargs['apicall'] = PHI_CALL
+        return self._get_call(text, **kwargs)
+
+    def _get_call(self, text, **kwargs):
         cleaned_text = self.vet_text(text)
-
-
         return self._get_paginated_entities(cleaned_text, **kwargs)
 
+    def _get_service_function(self, **kwargs):
+        if 'apicall' not in kwargs.keys():
+            logger.warning("call type Unspecified, returning default (get_entities) "
+                           "this can occur if entering through a function other "
+                           "than get_entities or get_phi")
+            return self.service.detect_entities
+        if kwargs['apicall'] is ENTITY_CALL:
+            return self.service.detect_entities
+        elif kwargs['apicall'] is PHI_CALL:
+            return self.service.detect_phi
+        else:
+            logger.warning("Unexpected Call Type Encountered: {}, returning default (get_entities) "
+                           "this can occur if entering through a function other "
+                           "than get_entities or get_phi".format(kwargs['apicall']))
+            return self.service.detect_entities
+
+    def _pare_returned_types(self, chunk_result, vetted_types):
+        '''
+        take a returned chunk from ComprehendMedical(ie: MedLPService)
+        '''
+        pared_dict = chunk_result
+        pared_dict['Entities'] = [item for item in chunk_result['Entities'] if item['Category'] in vetted_types]
+
+        return pared_dict
 
     def _get_paginated_entities(self, text_list, **kwargs):
         results = []
         char_offset = 0
         id_offset = 0
 
+        fn = self._get_service_function(**kwargs)
+
         for i, text_chunk in enumerate(text_list):
             if "entityTypes" in kwargs:
                 vetted_types = self._vet_entity_types(kwargs["entityTypes"])
-                chunk_result = self.service.detect_entities(Text=text_chunk, Types=vetted_types)
+                chunk_result = fn(Text=text_chunk)
+                chunk_result = self._pare_returned_types(chunk_result, vetted_types)
             else:
-                chunk_result = self.service.detect_entities(Text=text_chunk)
+                chunk_result = fn(Text=text_chunk)
 
             id_increment = 0
             try:
