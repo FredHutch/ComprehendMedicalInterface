@@ -11,7 +11,7 @@ By default, all entity types are evaluated
 
     "MEDICATION"
     "MEDICAL_CONDITION"
-    "PERSONAL_IDENTIFIABLE_INFORMATION"    
+    "PROTECTED_HEALTH_INFORMATION"    
     "TEST_TREATMENT_PROCEDURE"
     "ANATOMY"
     
@@ -20,7 +20,7 @@ By default, all entity types are evaluated
 > import ClinicalNotesProcessor.JSONParser as JSONParser
 > note_text = 'cerealx 84 mg daily'
 
-> types = ['PERSONAL_IDENTIFIABLE_INFORMATION', 'MEDICATION']
+> types = ['PROTECTED_HEALTH_INFORMATION', 'MEDICATION']
 
 > medlp = MedLPServiceInterface(JSONParser.xform_dict_to_json)
 > medlp.get_entities(note_text, entityTypes=types)  
