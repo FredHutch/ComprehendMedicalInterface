@@ -29,7 +29,7 @@ class MedLPServiceInterface(AmazonServiceInterface):
 
         super(MedLPServiceInterface, self).__init__(
             'comprehendmedical',
-            'US_EAST')
+            'US_WEST')
 
         self.parser = output_parser
 
@@ -50,16 +50,16 @@ class MedLPServiceInterface(AmazonServiceInterface):
             logger.warning("call type Unspecified, returning default (get_entities) "
                            "this can occur if entering through a function other "
                            "than get_entities or get_phi")
-            return self.service.detect_entities
+            return self.service.detect_entities_v2
         if kwargs['apicall'] is ENTITY_CALL:
-            return self.service.detect_entities
+            return self.service.detect_entities_v2
         elif kwargs['apicall'] is PHI_CALL:
             return self.service.detect_phi
         else:
             logger.warning("Unexpected Call Type Encountered: {}, returning default (get_entities) "
                            "this can occur if entering through a function other "
                            "than get_entities or get_phi".format(kwargs['apicall']))
-            return self.service.detect_entities
+            return self.service.detect_entities_v2
 
     def _pare_returned_types(self, chunk_result, vetted_types):
         '''

@@ -4,7 +4,8 @@ from utils.decorators import validateargs, in_dict, is_string
 
 class AmazonServiceInterface():
     VALID_ENDPOINTS = {
-        'US_EAST': 'https://aws707.us-east-1.amazonaws.com/'
+        'US_EAST': 'comprehendmedical.us-east-1.amazonaws.com',
+        'US_WEST': 'comprehendmedical.us-west-2.amazonaws.com'
     }
 
     VALID_REGIONS = {
