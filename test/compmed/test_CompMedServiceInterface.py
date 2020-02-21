@@ -1,13 +1,13 @@
 import unittest
-import clinicalnotesprocessor.JSONParser as JSONParser
+import utils.json_parser_util as JSONParser
 
-from amazonserviceinterface.MedLPServiceInterface import MedLPServiceInterface
+from compmed.CompMedServiceInterface import CompMedServiceInterface
 import unittest.mock as mock
 
 class TestMedLPServiceInterface(unittest.TestCase):
 
     def setUp(self):
-        self.medLPServiceInterface = MedLPServiceInterface(JSONParser.xform_dict_to_json)
+        self.CompMedServiceInterface = CompMedServiceInterface(JSONParser.xform_dict_to_json)
         self.INPUT_TEXT = "big happy case stuff \n that's small."
         self.INPUT_TEXT_MULTIPLE_NEWLINES = "big happy case stuff \n\r that's small."
         self.INPUT_TEXT_NO_VALID_SPlIT = "big happy case stuff that's small."
@@ -20,7 +20,7 @@ class TestMedLPServiceInterface(unittest.TestCase):
         case: when text is smaller than the provided cutoff, and the text wrapped as a list is returned
         '''
         expectedOutput = [self.INPUT_TEXT]
-        actualOutput = self.medLPServiceInterface.vet_text(self.INPUT_TEXT, cutoff=10000)
+        actualOutput = self.CompMedServiceInterface.vet_text(self.INPUT_TEXT, cutoff=10000)
 
         self.assertEqual(expectedOutput, actualOutput, "when text is smaller than the provided cutoff, "
                                                        "and the text wrapped as a list is returned")
@@ -31,7 +31,7 @@ class TestMedLPServiceInterface(unittest.TestCase):
         '''
 
         expectedOutput = [self.INPUT_TEXT[0:22], self.INPUT_TEXT[22:]]
-        actualOutput = self.medLPServiceInterface.vet_text(self.INPUT_TEXT, cutoff=25)
+        actualOutput = self.CompMedServiceInterface.vet_text(self.INPUT_TEXT, cutoff=25)
 
         self.assertEqual(expectedOutput, actualOutput, "the text will split on first available newline")
 
@@ -43,7 +43,7 @@ class TestMedLPServiceInterface(unittest.TestCase):
         '''
 
         expectedOutput = [self.INPUT_TEXT_NO_VALID_SPlIT[0:25], self.INPUT_TEXT_NO_VALID_SPlIT[25:]]
-        actualOutput = self.medLPServiceInterface.vet_text(self.INPUT_TEXT_NO_VALID_SPlIT, cutoff=25)
+        actualOutput = self.CompMedServiceInterface.vet_text(self.INPUT_TEXT_NO_VALID_SPlIT, cutoff=25)
 
         self.assertEqual(expectedOutput, actualOutput, "the text will default to splitting at the cutoff"
                                                        " if no viable option is found")
@@ -56,7 +56,7 @@ class TestMedLPServiceInterface(unittest.TestCase):
         '''
 
         expectedOutput = [self.INPUT_TEXT_MULTIPLE_NEWLINES[0:23], self.INPUT_TEXT_MULTIPLE_NEWLINES[23:]]
-        actualOutput = self.medLPServiceInterface.vet_text(self.INPUT_TEXT_MULTIPLE_NEWLINES, cutoff=26)
+        actualOutput = self.CompMedServiceInterface.vet_text(self.INPUT_TEXT_MULTIPLE_NEWLINES, cutoff=26)
 
         self.assertEqual(expectedOutput, actualOutput, "the text will split on first available newline, "
                                                        "even if there are multiple valid candidates")
@@ -70,7 +70,7 @@ class TestMedLPServiceInterface(unittest.TestCase):
                  {'Id': 1, 'BeginOffset': 30, 'EndOffset': 35, 'Score': .99}]
         expectedOutput = [{'Id': 20, 'BeginOffset': 20, 'EndOffset': 30, 'Score': .99},
                           {'Id': 21, 'BeginOffset': 40, 'EndOffset': 45, 'Score': .99}]
-        actualOutput = self.medLPServiceInterface._inject_offset_for_paginated_query(input, 10, 20)
+        actualOutput = self.CompMedServiceInterface._inject_offset_for_paginated_query(input, 10, 20)
 
         self.assertEqual(expectedOutput, actualOutput, "entity chunk is returned with offsets injected")
 
@@ -91,9 +91,9 @@ class TestMedLPServiceInterface(unittest.TestCase):
                                [{'Id': 0, 'BeginOffset': 20, 'EndOffset': 30, 'Score': .99},
                                 {'Id': 1, 'BeginOffset': 40, 'EndOffset': 45, 'Score': .99}]
                            }
-        mockMedLPService = mock.MagicMock()
-        mockMedLPService.detect_entities.side_effect = iter([serviceOutput_1, serviceOutput_2, serviceOutput_3])
-        self.medLPServiceInterface.service = mockMedLPService
+        mockCompMedService = mock.MagicMock()
+        mockCompMedService.detect_entities.side_effect = iter([serviceOutput_1, serviceOutput_2, serviceOutput_3])
+        self.CompMedServiceInterface.service = mockCompMedService
 
         input = ["foo bar baz", "bif zoom pow", "bof zow bonk"]
         expectedOutput = [{'Id': 0, 'BeginOffset': 20, 'EndOffset': 30, 'Score': .99},
@@ -103,7 +103,7 @@ class TestMedLPServiceInterface(unittest.TestCase):
                           {'Id': 4, 'BeginOffset': 43, 'EndOffset': 53, 'Score': .99},
                           {'Id': 5, 'BeginOffset': 63, 'EndOffset': 68, 'Score': .99}
                           ]
-        actualOutput = self.medLPServiceInterface._get_paginated_entities(input, apicall='entities')
+        actualOutput = self.CompMedServiceInterface._get_paginated_entities(input, apicall='entities')
 
         self.assertEqual(expectedOutput,
                          actualOutput,

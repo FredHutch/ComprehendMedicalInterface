@@ -2,7 +2,7 @@ import boto3
 import itertools
 import logging
 
-from amazonserviceinterface.AmazonServiceInterface import AmazonServiceInterface
+from compmed.AmazonServiceInterface import AmazonServiceInterface
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -20,14 +20,14 @@ ALLOWED_ENTITY_TYPES = [
 ENTITY_CALL = 'entities'
 PHI_CALL = 'phi'
 
-class MedLPServiceInterface(AmazonServiceInterface):
+class CompMedServiceInterface(AmazonServiceInterface):
     def __init__(self, output_parser):
         '''
 
         :param output_parser: a function that accepts a dictionary and returns shaped output
         '''
 
-        super(MedLPServiceInterface, self).__init__(
+        super(CompMedServiceInterface, self).__init__(
             'comprehendmedical',
             'US_WEST')
 
@@ -47,7 +47,7 @@ class MedLPServiceInterface(AmazonServiceInterface):
 
     def _get_service_function(self, **kwargs):
         if 'apicall' not in kwargs.keys():
-            logger.warning("call type Unspecified, returning default (get_entities) "
+            logger.warning("call type unspecified, returning default (get_entities) "
                            "this can occur if entering through a function other "
                            "than get_entities or get_phi")
             return self.service.detect_entities_v2
