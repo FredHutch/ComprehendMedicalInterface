@@ -16,9 +16,10 @@ By default, all entity types are evaluated
     "ANATOMY"
     
 ## set up
-> from amazonserviceinterface.CompMedServiceInterface import CompMedServiceInterface
+> from compmed.CompMedServiceInterface import CompMedServiceInterface
 > import utils.json_parser_util as JSONParser
-> note_text = 'Mr. Doe was diagnosed with Stage III adenocarcinoma of the left lung on 3/14/2018'
+> 
+note_text = 'Mr. Doe was diagnosed with Stage III adenocarcinoma of the left lung on 3/14/2018'
 
 > types = ['PROTECTED_HEALTH_INFORMATION', 'MEDICATION']
 
