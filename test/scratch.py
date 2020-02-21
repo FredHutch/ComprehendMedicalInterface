@@ -1,11 +1,11 @@
 import argparse
 import os
 
-import clinicalnotesprocessor.JSONParser as JSONParser
-from amazonserviceinterface.MedLPServiceInterface import MedLPServiceInterface
+import utils.json_parser_util as JSONParser
+from amazonserviceinterface.CompMedServiceInterface import CompMedServiceInterface
 
 
-cmd_arg_parser = argparse.ArgumentParser("medLPService amazonserviceinterface: a encapsulated way to interact with Amazon MedLP using a python wrapper.")
+cmd_arg_parser = argparse.ArgumentParser("CompMedService amazonserviceinterface: a encapsulated way to interact with Amazon MedLP using a python wrapper.")
 cmd_arg_parser.add_argument('-t', action="store_true", default=False,
                             dest="is_test",
                             help="Set mode to test. There will be additional debug information and no computationally expensive functions will be run.")
@@ -22,7 +22,7 @@ cmd_args = cmd_arg_parser.parse_args()
 with open(cmd_args.input_file) as file:
    text = file.read()
 
-medlp = MedLPServiceInterface(JSONParser.xform_dict_to_json)
-entities = medlp.get_entities(text, entityTypes=["PERSONAL_IDENTIFIABLE_INFORMATION", "MEDICATION"])
+comp_med = CompMedServiceInterface(JSONParser.xform_dict_to_json)
+entities = comp_med.get_entities(text, entityTypes=["PERSONAL_IDENTIFIABLE_INFORMATION", "MEDICATION"])
 print(entities)
 
