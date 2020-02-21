@@ -2,10 +2,10 @@ import argparse
 import os
 
 import utils.json_parser_util as JSONParser
-from amazonserviceinterface.CompMedServiceInterface import CompMedServiceInterface
+from compmed.CompMedServiceInterface import CompMedServiceInterface
 
 
-cmd_arg_parser = argparse.ArgumentParser("CompMedService amazonserviceinterface: a encapsulated way to interact with Amazon MedLP using a python wrapper.")
+cmd_arg_parser = argparse.ArgumentParser("CompMedService compmed: a encapsulated way to interact with Amazon Comprehend Medical using a python wrapper.")
 cmd_arg_parser.add_argument('-t', action="store_true", default=False,
                             dest="is_test",
                             help="Set mode to test. There will be additional debug information and no computationally expensive functions will be run.")

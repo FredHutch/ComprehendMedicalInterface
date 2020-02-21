@@ -1,7 +1,7 @@
 import unittest
 import utils.json_parser_util as JSONParser
 
-from amazonserviceinterface.CompMedServiceInterface import CompMedServiceInterface
+from compmed.CompMedServiceInterface import CompMedServiceInterface
 import unittest.mock as mock
 
 class TestMedLPServiceInterface(unittest.TestCase):

@@ -5,7 +5,7 @@ from setuptools import setup
 setup(
     name='ComprehendMedicalInterface',
     version='0.1',
-    packages=['amazonserviceinterface', 'utils'],
+    packages=['compmed', 'utils'],
     include_package_data=True,
     url='https://github.com/FredHutch/ComprehendMedicalInterface',
     license='',

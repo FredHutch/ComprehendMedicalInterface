@@ -2,7 +2,7 @@ import boto3
 import itertools
 import logging
 
-from amazonserviceinterface.AmazonServiceInterface import AmazonServiceInterface
+from compmed.AmazonServiceInterface import AmazonServiceInterface
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
