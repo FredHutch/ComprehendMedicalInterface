@@ -3,7 +3,7 @@ from setuptools import setup
 
 
 setup(
-    name='ComprehendMedicalInterface',
+    name='compmed',
     version='0.1',
     packages=['compmed', 'utils'],
     include_package_data=True,
