@@ -1,6 +1,6 @@
 import boto3
 
-from utils.decorators import validateargs, in_dict, is_string
+from compmed_utils.decorators import validateargs, in_dict, is_string
 
 class AmazonServiceInterface():
     VALID_ENDPOINTS = {
