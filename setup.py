@@ -5,7 +5,7 @@ from setuptools import setup
 setup(
     name='compmed',
     version='0.1',
-    packages=['compmed', 'utils'],
+    packages=['compmed', 'compmed_utils'],
     include_package_data=True,
     url='https://github.com/FredHutch/ComprehendMedicalInterface',
     license='',
