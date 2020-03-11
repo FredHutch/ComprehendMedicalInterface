@@ -3,7 +3,7 @@ from setuptools import setup
 
 
 setup(
-    name='compmed',
+    name='compmed-pkg',
     version='0.1',
     packages=['compmed', 'compmed_utils'],
     include_package_data=True,
